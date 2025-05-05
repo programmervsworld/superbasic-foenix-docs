@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Peeks And Pokes - SuperBasic On The Foenix F256</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Peeks And Pokes";
+        var mkdocs_page_input_path = "manual\\peeksandpokes.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> SuperBasic On The Foenix F256
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../preface/">Preface</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Peeks And Pokes</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#but-what-about-bigger-numbers">But what about bigger numbers?</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#indirection-operators">Indirection Operators</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#fun-example">Fun Example</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">SuperBasic On The Foenix F256</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Peeks And Pokes</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="peeking-and-a-poking">Peeking and a Poking</h1>
+<p>With 8-bit programming, one of the most common tasks we face is how to set specific values in memory. Even in basic we find ourselves needing to set a flag, update a color value or turn some feature on or off that just isn't reachable using the languages dialect. This is where we need to peek and poke.</p>
+<p>Lets look at a fun and simple example using the cursor and the rate that it flashes. If we look at the reference manuals for the Foenix we can see that the cursor blink rate is a set of flags inside of a memory address at $D010. We can look at what value is in there by default by typing:</p>
+<pre><code>print peek ($D010)
+5
+</code></pre>
+<p>The peek command will return the one-byte value of the value stored in memory address $D010. In this case its 5. If we look at the memory information from the Foenix reference manual we can see each of the 8 bits has something to do with the cursor.</p>
+<table>
+<thead>
+<tr>
+<th>Address</th>
+<th>Bit 7</th>
+<th>Bit 6</th>
+<th>Bit 5</th>
+<th>Bit 4</th>
+<th>Bit 3</th>
+<th>Bit 2-1</th>
+<th>Bit 0</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>$D010</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>Flash On/Off</td>
+<td>Flash Rate</td>
+<td>Enable</td>
+</tr>
+</tbody>
+</table>
+<p>We can change one-byte values in memory using the poke command. Let's see if we can change the cursor behaviours using the table. So when we asked what the byte was set to the system essentially told us the value 5. In binary that would be 00000101. So The flash rate bits are set to 1 and 0 (4) and the bit 0 value is turned on (1) for a total of 5. This means if we set bits 2 and 1 to 0 then we should flash the slowest we possible could. Lets try poking that value:</p>
+<pre><code>poke $D010, 1
+</code></pre>
+<p>You should now see the cursor flash every 1 second. Lets turn the flashing off just for fun (we can always reset the unit to go back to default).</p>
+<pre><code>poke $D010, 9
+</code></pre>
+<p>Now the cursor won't flash at all and should be stuck on the on position. This is the because we set the value of 8 (bit 3) + enable (bit 1) = 9 (00001001). </p>
+<h2 id="but-what-about-bigger-numbers">But what about bigger numbers?</h2>
+<p>So this is all cool poking and peeking one byte numbers and all, but what about when we need to do something larger? Well fortunately for us in SuperBasic we have a few extra commands that help out alot with this.</p>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Bytes</th>
+<th>Max Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>peek / poke</td>
+<td>1</td>
+<td>255 ($FF)</td>
+</tr>
+<tr>
+<td>peekw / pokew</td>
+<td>2</td>
+<td>65535 ($FFFF)</td>
+</tr>
+<tr>
+<td>peekl / pokel</td>
+<td>3</td>
+<td>16777215 ($FFFFFF)</td>
+</tr>
+<tr>
+<td>peekd / poked</td>
+<td>4</td>
+<td>Ridiculously Large Number ($FFFFFF)</td>
+</tr>
+</tbody>
+</table>
+<p>You might ask why we'd need all these? Especially the larger ones. Well it turns out that 3 and 4 byte numbers are used in colors frequently. For instance, the Foenix keeps its colors in look up tables (or LUTs for short). Each color is assigned a number or index and is comprised of 3 bytes the same as you are probably used to if you ever do any web development. For instance the hex code #641e16 is a dark red. It's made up of three bytes each one representing a value between 0 and 255. The first byte is the amount of red, the second is the amount of blue and the third is the amount of green. When all three are put together it represents a number between 0 and 16777215.</p>
+<p>Lets do something with that color to demonstrate the point. Enter the following into the basic prompt:</p>
+<pre><code>poke 1,0
+pokel $D848, $641E16
+</code></pre>
+<p>What happened? If you machine behaved like mine, it changed the background to a dark rich red represented by the hex code. This code by the way was just an arbitrary one I picked from htmlcolorcodes.com, but it demontrates why we need pokel as a command. Reset your machine and try this one:</p>
+<pre><code>poke 1,0
+poke $D848, $641E16
+</code></pre>
+<p>Notice it isn't the same color. Thats because the POKE only really changed to the value $16 at the end of that hex code. If you were to use a pokew only the $1E16 would work.</p>
+<p>So color when it comes to bitmaps and sprites have one more byte attached to them (though at time of writing I'm not sure its used). It's an alpha value. So the format in hex would be RRGGBBAA where A is the alpha value between 0 and 255. This would require a peekd to set.</p>
+<h2 id="indirection-operators">Indirection Operators</h2>
+<p>The commands peek and peekw have a really cool indirection operator shortcut for them as well and it can be confusing if you are coming from other versions of Basic.</p>
+<p>In Commodore 64 basic the <code>?</code> is used as a shortcut for print. So the command:</p>
+<pre><code>? "Hi"
+</code></pre>
+<p>would print hi to the screen. If you tried that on your SuperBasic prompt on the Foenix you'll get the dreaded <code>Type mismatch</code> error.</p>
+<p>In our world the <code>?</code> is an indrection operator for both peek and poke. It can be either depending on how it's used. For instance, in the previous examples were we always setting the MMU page to a value before we started poking on things like this:</p>
+<pre><code>poke 1,0
+print peek(1)
+</code></pre>
+<p>This will set memory address $0001 to 0 and then print what we set it to. The same commands using the indirection operator would be:</p>
+<pre><code>?1 = 0
+print ?1
+</code></pre>
+<p>When we use the indirection on the left side of the equals is means set memory address $0001 to 1. Later when we ask it to print ?1 it will do the same thing as printing the peek of memory address $0001.</p>
+<p>If we use this on our previous cursor example we could go like:</p>
+<pre><code>?$D010=1
+</code></pre>
+<p>To make the cursor flash slow or</p>
+<pre><code>?$D010=9
+</code></pre>
+<p>To freeze it.</p>
+<p>Likewise we do have an indirection operator for two byte values as well and its the <code>!</code>. If we needed to set two bytes in memory and then retrieve it we could just do something like:</p>
+<pre><code>!$2000=$FFFF
+print !$2000
+</code></pre>
+<p>Notice the value is 65535, this is the max two bytes can be.</p>
+<p>At the time of writing there is no indirections for 3 or 4 byte values which is a shame but using poke and peek is pretty common in code. The indirection, while cool, isn't really as readible as it's counterparts.</p>
+<h2 id="fun-example">Fun Example</h2>
+<p>This fun example shows a fun way to use pokel. Don't worry too much about the event command, we'll cover it later, just know that this is going to make something happen every 1 second (or 70 frames).</p>
+<pre><code>10 event1=0
+20 poke 1,0
+30 repeat
+40 if event(event1, 70)
+50 r=random(255):g=random(255):b=random(255)
+60 v=r*b*g
+70 pokel $D848, v
+80 print str$(v)+" ";
+90 endif
+100 until false
+</code></pre>
+<p>If this runs correctly you should see your text screen change color every second and the 3 byte value it was set to be printed onto the screen.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../../preface/" class="btn btn-neutral float-left" title="Preface"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../../preface/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
